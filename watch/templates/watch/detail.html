@@ -1,0 +1,21 @@
+
+{% extends 'watch/base.html' %}
+{% block body %}
+
+<div class = "container">
+    <div class="row">
+        <div class="col-md-6">
+            <img height = "200px" src="{{ product.product_image.url }}" alt="" class="img-fluid"/>
+        </div>
+        <div class="col-md-6">
+            <h1>{{ product.product_name }}</h1>
+            <h2>{{ product.product_category}}</h2>
+            <h3>{{ product.product_desc }}</h3>
+            <h4>{{ product.product_model }}</h4>
+            <h5>${{ product.product_price }}</h5>
+            <a href="{% url 'watch:remove_product' product.id %}">Remove</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

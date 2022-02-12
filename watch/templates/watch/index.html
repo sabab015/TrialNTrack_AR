@@ -1,0 +1,85 @@
+{% extends 'watch/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}" type='text/css'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+    <title>Document</title>
+    
+</head>
+<body id="bg" style="background-image: url('{% static 'watch/images/logo.jpg' %}')";>
+{% block body %}
+    {% for product in product_list %}
+        <div class="row">
+            <div class="col-md-3 offset-md-2">
+                <img class="img-fluid" height="150px" src="{{ product.product_image.url }}" alt=""/>
+            </div>
+            <div class="col-md-4">
+                <div id="nm{{ product.id }}" class="card-title"><h1>{{ product.product_name }}</h1></div>
+                <div id="price{{ product.id }}" class="card-text">{{ product.product_price }}</div> 
+            </div> 
+            <div class="col-md-2">
+                <a href="{% url 'watch:detail' product.id %}" class="btn btn-success">Details</a>
+                <button id="{{ product.id }}"class="btn atc btn-success">Add to cart</button>
+            </div>
+
+        </div>
+    {% endfor %}
+{% endblock %}
+</body>
+{% block js %} 
+<script type="text/javascript">
+console.log('working');
+if(localStorage.getItem('cart') == null){
+    var cart = {};
+}
+else{
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+
+$(document).on('click','.atc',function(){
+    console.log("This add to cart button is clicked");
+    var item_id = this.id.toString();
+    console.log(item_id);
+
+    if(cart[item_id]!=undefined){
+        quantity = cart[item_id][0] + 1;
+        cart[item_id][0] = quantity;
+        cart[item_id][2] = cart[item_id][2] + parseFloat(document.getElementById("price" + item_id).innerHTML);
+        
+    }
+    else{
+        quantity = 1;
+        price = parseFloat(document.getElementById("price" + item_id).innerHTML);
+        name = document.getElementById("nm"+item_id).innerHTML;
+        cart[item_id] = [quantity,name,price];
+   
+    }
+    console.log(cart);
+    localStorage.setItem('cart',JSON.stringify(cart));
+    document.getElementById("cart").innerHTML = "Cart("+ Object.keys(cart).length+")";
+});
+
+DisplayCart(cart);
+    function DisplayCart(cart){
+        var cartString = "";
+        cartString += "<h5>This is your cart</h5>";
+        var cartIndex = 1;
+        for( var x in cart){
+            
+          cartString += cartIndex;
+          cartString += document.getElementById("nm"+x).innerHTML + "Qty:" + cart[x][0] +"</br>";
+          cartIndex +=1;
+        }
+    cartString += "<a href='/checkout'><button class='btn btn-success' id='checkout'>Checkout</button></a>";    
+    document.getElementById("cart").setAttribute('data-content',cartString);
+    $('[data-toggle="popover"]').popover();
+    }
+
+</script>
+{% endblock %}
+
+</html>
